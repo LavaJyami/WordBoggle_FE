@@ -7,26 +7,26 @@ class Mainboard extends Component{
     return(
       <div>
         <h1>Word Boggle !!</h1>
-        <div class="squarecontainer">
-          <div class="row">
+        <div className="squarecontainer">
+          <div className="row">
           <Square value="Q"/>
           <Square value="B"/>
           <Square value="A"/>
           <Square value="S"/>
           </div>
-            <div class="row">
+            <div className="row">
             <Square value="Q"/>
             <Square value="B"/>
             <Square value="A"/>
             <Square value="S"/>
             </div>
-            <div class="row">
+            <div className="row">
             <Square value="Q"/>
             <Square value="B"/>
             <Square value="A"/>
             <Square value="S"/>
             </div>
-            <div class="row">
+            <div className="row">
             <Square value="Q"/>
             <Square value="B"/>
             <Square value="A"/>

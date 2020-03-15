@@ -4,7 +4,7 @@ import './App.css';
 class Square extends Component {
   render(){
     return(
-      <div class="square" >
+      <div className="square" >
         {this.props.value}
       </div>
     );
