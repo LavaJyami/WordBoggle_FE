@@ -5,7 +5,10 @@ import Wordlist from './Wordlist';
 class GameBoard extends Component {
   constructor(props){
     super(props);
-    this.state = {word: ''};
+    this.state = {
+      word: '',
+      approvedWords: []
+    };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -14,9 +17,11 @@ class GameBoard extends Component {
     this.setState({word: event.target.word});
   }
   handleSubmit(event){
-    event.preventDefault();
-    //what do do when submitted??
-    //make a component that will accept the word as acomponent and dispay the words there
+  let word = event.target[0].value;
+  this.setState(previousState => ({
+  approvedWords: [...previousState.approvedWords, word]}));
+  this.setState({word: ''});
+  event.preventDefault();
   }
   render(){
     return(
@@ -26,13 +31,11 @@ class GameBoard extends Component {
         <Mainboard />
         <form id="input_box" onSubmit={this.handleSubmit}>
           <input  type="text"  onChange={this.handleChange}  value={ this.state.word } placeholder="enter word"/>
-          <input  type="submit" value="Submit" />
+          <input  className = "addButton"type="submit" value="Add +" />
         </form>
         </div>
-        <Wordlist/>
+        <Wordlist value = {this.state.approvedWords}/>
       </div>
-
-
     </div>
     );
   }
