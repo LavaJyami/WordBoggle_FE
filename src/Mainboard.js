@@ -5,7 +5,7 @@ import './App.css';
 class Mainboard extends Component{
   render(){
     return(
-      <div id="mainboard">
+      <div>
         <h1>Word Boggle !!</h1>
         <div class="squarecontainer">
           <div class="row">

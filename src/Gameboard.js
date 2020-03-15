@@ -4,8 +4,16 @@ import Mainboard from './Mainboard';
 class GameBoard extends Component {
   render(){
     return(
-    <Mainboard />
-
+    <div id="mainboard">
+      <Mainboard />
+      <form id="input_box">
+          <label>
+            Enter Word
+            <input class="textbox" type="text" name="name" />
+          </label>
+          <input class="submit_button" type="submit" value="Submit" />
+      </form>
+    </div>
     );
   }
 }
