@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Mainboard from './Mainboard';
 import Wordlist from './Wordlist';
+import Timer from './Timer';
 
 class GameBoard extends Component {
   constructor(props){
@@ -49,6 +50,7 @@ class GameBoard extends Component {
                 <div>
                     <Wordlist value = {approvedWords}/>
                     <button className = "gameSubmit"> Submit Game </button>
+                    <Timer duration = {5} />
                 </div>
             </div>
       </div>
