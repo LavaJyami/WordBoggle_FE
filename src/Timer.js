@@ -7,20 +7,19 @@ constructor(props){
     count: this.props.duration
   }
 }
-componentDidMount(){
-
-      this.timeRemaining = setInterval( () => {
-        if(this.state.count !== 0){
-        this.setState(prevState => ({
-          count: prevState.count - 1
-        }))}
-      }, 1000);
-
+startTimer(){
+  this.timeRemaining = setInterval( () => {
+    if(this.state.count !== 0){
+    this.setState(prevState => ({
+      count: prevState.count - 1
+    }))}
+  }, 1000);
 }
 componentWillUnmount(){
   clearInterval(this.timeRemaining);
 }
 render(){
+  this.startTimer();
   const {count} = this.state;
   return(
     <div>
@@ -29,5 +28,4 @@ render(){
   );
 }
 }
-
 export default Timer;
