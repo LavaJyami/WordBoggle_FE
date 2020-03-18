@@ -95,47 +95,53 @@ console.log(err);
             return false;
         }
 
-        if(stack.length > 0)
-        approvedLetters.push(stack[stack.length - 1]);
+
+
         //the problem is that the next time around the system cant go to the other path because the letters are in
         //approved list!!!! remove the letters from the approved list and try AGAIN!!!!!!
 
         if(foundFlag && lettersFound === 1){
           console.log('letter found:' + word[k]);
           k++;
+          approvedLetters.push(stack[stack.length - 1]);
           console.log('K updated to:' + k);
           console.log('visited letters: ' + approvedLetters);
           console.log('stack : ' + stack);
-
           if(k === wordLength)
           return true;
 
           value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
 
         }
-         if(foundFlag && lettersFound> 1){
+         else if(foundFlag && lettersFound> 1){
           //this is where it branched off
           console.log('letter found:' + word[k]);
           unchecked_branch = k+1;
           console.log('branched off here: ' + unchecked_branch);
           console.log('visited letters: ' + approvedLetters);
           console.log('stack : ' + stack);
+          // approvedLetters.push(stack[stack.length - 1]);
           k++;
           if(k === wordLength)
           return true;
           value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
         }
-         if(!foundFlag && stack.length>0){
+
+         else if(!foundFlag && stack.length>0){
           //go back to the node where it branches off
           //what variables need to be tracked ??
+          console.log('visited letters: ' + approvedLetters);
           k = unchecked_branch;
-          for(let l=0;l<=approvedLetters.length-(k-1);l++){
-            approvedLetters.pop();
-          }
-          //remove the multiple entries
+          // const current_length = approvedLetters.length-(k-2);
+          // for(let l=0;l<=current_length;l++){
+          //   approvedLetters.pop();
+          // }
+
           value = stack.pop();i = value[0]; j = value[1]; lettersFound = 0;
+          approvedLetters.push(value);
           console.log('nothing is found. reverting the value of k back to: ' + k);
           console.log('looking for the next letter: ' + word[k]);
+          console.log('visited letters chopped to: ', approvedLetters);
         }
 
 
