@@ -1,7 +1,12 @@
 #mainboard {
   margin-left: 50px;
 }
-
+#timer{
+  margin-top: 50px;
+  margin-left: 50px;
+  font-size: 10pt;
+  color: red;
+}
 .square {
   display: flex;
   width: 80px;
@@ -27,12 +32,12 @@
 #wordList{
   border: 1px solid gray;
   min-width: 120px;
-  margin-top: 80px;
   margin-left: 40px;
   height: 325px;
 }
 .wordList{
   list-style: none;
+  min-height: 100%;
 }
 .boards{
   display: flex;

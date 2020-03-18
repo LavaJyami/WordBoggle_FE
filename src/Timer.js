@@ -22,7 +22,7 @@ render(){
   this.startTimer();
   const {count} = this.state;
   return(
-    <div>
+    <div id="timer">
         <p>Time Remaining: {count}</p>
     </div>
   );

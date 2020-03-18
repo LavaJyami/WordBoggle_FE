@@ -10,27 +10,17 @@ class GameBoard extends Component {
       word: '',
       approvedWords: [],
       error: '',
-      board: [['E',"T","N","A"],["D","Z","E","E"],["L","O","U","R"],["S","T","O","P"]],
-
+      board: [[''," "," "," "],[" "," "," "," "],[" "," "," "," "],[" "," "," "," "]],
+      time: {},
+      seconds: 10,
+      endgame: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  componentDidMount(){
-    fetch("https://wordsapiv1.p.rapidapi.com/words/hatchback/typeOf", {
-"method": "GET",
-"headers": {
-  "x-rapidapi-host": "wordsapiv1.p.rapidapi.com",
-  "x-rapidapi-key": "c838214e88mshde1a05fce399c05p1e1349jsnbfa68b0f5e63"
-}
-})
-.then(response => {
-console.log(response);
-})
-.catch(err => {
-console.log(err);
-});
+    this.timer = 0;
+    this.startTimer = this.startTimer.bind(this);
+    this.startGame = this.startGame.bind(this);
+    this.countDown = this.countDown.bind(this);
   }
 
   handleChange(event){
@@ -101,8 +91,6 @@ console.log(err);
           return true;
           value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
           approvedLetters.push(value);
-          console.log('appoved letters:'+approvedLetters);
-          console.log('---------------------------------');
         }
          else if(foundFlag && lettersFound> 1){
           unchecked_branch = k+1;
@@ -111,8 +99,6 @@ console.log(err);
           return true;
           value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
           approvedLetters.push(value);
-          console.log('appoved letters:'+approvedLetters);
-          console.log('---------------------------------');
         }
          else if(!foundFlag && stack.length>0){
           k = unchecked_branch;
@@ -123,8 +109,6 @@ console.log(err);
           }
           value = stack.pop();i = value[0]; j = value[1]; lettersFound = 0;
           approvedLetters.push(value);
-          console.log('appoved letters:'+approvedLetters);
-          console.log('---------------------------------');
         }
       }
   }
@@ -177,9 +161,65 @@ console.log(err);
     event.preventDefault();
   }
 
+  secondsToTime(secs){
+      let hours = Math.floor(secs / (60 * 60));
+
+      let divisor_for_minutes = secs % (60 * 60);
+      let minutes = Math.floor(divisor_for_minutes / 60);
+
+      let divisor_for_seconds = divisor_for_minutes % 60;
+      let seconds = Math.ceil(divisor_for_seconds);
+
+      let obj = {
+        "h": hours,
+        "m": minutes,
+        "s": seconds
+      };
+      return obj;
+    }
+
+  getNewGame(){
+    return([['E',"T","N","A"],["D","Z","E","E"],["L","O","U","R"],["S","T","O","P"]]);
+  }
+  componentDidMount() {
+    let timeLeftVar = this.secondsToTime(this.state.seconds);
+    this.setState({ time: timeLeftVar });
+
+  }
+
+  startTimer() {
+    if (this.timer == 0 && this.state.seconds > 0) {
+      this.timer = setInterval(this.countDown, 1000);
+    }
+    this.setState({endgame: false});
+  }
+  startGame() {
+  var board = this.getNewGame();
+  this.setState({board});
+  this.startTimer();
+  }
+  countDown() {
+    // Remove one second, set state so a re-render happens.
+    let seconds = this.state.seconds - 1;
+    this.setState({
+      time: this.secondsToTime(seconds),
+      seconds: seconds,
+    });
+
+    // Check if we're at zero.
+    if (seconds == 0) {
+      this.setState({board: [['','','',''],['','','',''],['','','',''],['','','','']]});
+      this.setState({endgame: true});
+      clearInterval(this.timer);
+    }
+  }
+
+
+
   render(){
-    const {word, approvedWords, error, board} = this.state;
+    const {word, approvedWords, error, board, endgame} = this.state;
     return(
+
       <div id="mainboard">
             <div className = "boards">
                 <div>
@@ -196,16 +236,34 @@ console.log(err);
                         type="submit"
                         value="Add +"
                         />
+
+
                     </form>
                     <p className = "error">{error}</p>
+                    <div>
+                      <button
+                      onClick={this.startTimer}
+                      >Play Again
+                      </button>
+                      <button
+                      onClick={this.startGame}
+                      >StartGame
+                      </button>
+                    </div>
                 </div>
+
                 <div>
+                      <div id="timer">
+                        Time Remaining: {this.state.time.s}
+                      </div>
                     <Wordlist value = {approvedWords}/>
                     <button className = "gameSubmit"> Submit Game </button>
-                    <Timer duration = {5} />
+
                 </div>
             </div>
       </div>
+
+
     );
   }
 }
