@@ -10,10 +10,27 @@ class GameBoard extends Component {
       word: '',
       approvedWords: [],
       error: '',
-      board: [['E',"T","N","A"],["D","Z","E","E"],["L","O","U","R"],["S","T","O","P"]]
+      board: [['E',"T","N","A"],["D","Z","E","E"],["L","O","U","R"],["S","T","O","P"]],
+
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount(){
+    fetch("https://wordsapiv1.p.rapidapi.com/words/hatchback/typeOf", {
+"method": "GET",
+"headers": {
+  "x-rapidapi-host": "wordsapiv1.p.rapidapi.com",
+  "x-rapidapi-key": "c838214e88mshde1a05fce399c05p1e1349jsnbfa68b0f5e63"
+}
+})
+.then(response => {
+console.log(response);
+})
+.catch(err => {
+console.log(err);
+});
   }
 
   handleChange(event){
@@ -23,7 +40,6 @@ class GameBoard extends Component {
   validate(word){
     const board = this.state.board;
     const currentWord = word.toLowerCase();
-    var visited = [[1,1]];
     if(this.state.approvedWords.includes(currentWord))
       return false;
       // console.log(!this.isOutOfBounds(3,0,3,'rt') && !this.isRepeated(visited,2,0) && board[3][1].toLowerCase()===word[1]);
@@ -38,60 +54,98 @@ class GameBoard extends Component {
   }
 
   depthFirstSearch(i, j, board, word){
-    let visited = [];
+    let stack = [];
     let approvedLetters = [[i,j]];
     let wordLength = word.length;
     const boardDim = board.length;
     var k = 1;
-    var value = '';
+    var value = [];
     var foundFlag  = false;
-    var unchecked_sibling_pos = 0;
+    var lettersFound = 0;
+    var unchecked_branch = [];
 
     while(k<=wordLength){
+
       if(!this.isOutOfBounds(i,j,boardDim-1,'tp') && !this.isRepeated(approvedLetters,i-1,j) && board[i-1][j].toLowerCase()===word[k]){
-        visited.push([i-1,j]); approvedLetters.push([i-1,j]);foundFlag = true;
+        stack.push([i-1,j]); foundFlag = true; lettersFound++;
       }
       if(!this.isOutOfBounds(i,j,boardDim-1,'tr') && !this.isRepeated(approvedLetters,i-1,j) && board[i-1][j+1].toLowerCase()===word[k]){
-        visited.push([i-1,j+1]); approvedLetters.push([i-1,j+1]); foundFlag = true;
+        stack.push([i-1,j+1]);  foundFlag = true; lettersFound++;
       }
       if(!this.isOutOfBounds(i,j,boardDim-1,'rt') && !this.isRepeated(approvedLetters,i,j+1) && board[i][j+1].toLowerCase()===word[k]){
-        visited.push([i,j+1]); approvedLetters.push([i,j+1]); foundFlag = true;
+        stack.push([i,j+1]);  foundFlag = true; lettersFound++;
         }
       if(!this.isOutOfBounds(i,j,boardDim-1,'br') && !this.isRepeated(approvedLetters,i+1,j+1) && board[i+1][j+1].toLowerCase()===word[k]){
-        visited.push([i+1,j+1]);approvedLetters.push([i+1,j+1]); foundFlag = true;
+        stack.push([i+1,j+1]); foundFlag = true; lettersFound++;
         }
       if(!this.isOutOfBounds(i,j,boardDim-1,'bt') && !this.isRepeated(approvedLetters,i+1,j) && board[i+1][j].toLowerCase()===word[k]){
-        visited.push([i+1,j]); approvedLetters.push([i+1,j]); foundFlag = true;
+        stack.push([i+1,j]);  foundFlag = true; lettersFound++;
         }
       if(!this.isOutOfBounds(i,j,boardDim-1,'bl') && !this.isRepeated(approvedLetters,i+1,j-1) && board[i+1][j-1].toLowerCase()===word[k]){
-        visited.push([i+1,j-1]); approvedLetters.push([i+1,j-1]);foundFlag = true;
+        stack.push([i+1,j-1]); foundFlag = true; lettersFound++;
         }
       if(!this.isOutOfBounds(i,j,boardDim-1,'lt') && !this.isRepeated(approvedLetters,i,j-1) && board[i][j-1].toLowerCase()===word[k]){
-        visited.push([i,j-1]);approvedLetters.push([i,j-1]); foundFlag = true;
+        stack.push([i,j-1]); foundFlag = true; lettersFound++;
         }
       if(!this.isOutOfBounds(i,j,boardDim-1,'tl') && !this.isRepeated(approvedLetters,i-1,j-1) && board[i-1][j-1].toLowerCase()===word[k]){
-        visited.push([i-1,j-1]); approvedLetters.push([i-1,j-1]);foundFlag = true;
+        stack.push([i-1,j-1]); foundFlag = true; lettersFound++;
         }
 
-        if(k==wordLength){
-          return true;
-        }
-        if(visited.length>0){
-            if(foundFlag){
-                unchecked_sibling_pos = k;
-                k++;
-            }
-            else{
-                k = unchecked_sibling_pos;
-                k++;
-            }
-             value = visited.pop(); i = value[0]; j = value[1]; foundFlag=false;
-        }
-        else {
+        if(!foundFlag && stack.length === 0) {
             return false;
         }
+
+        if(stack.length > 0)
+        approvedLetters.push(stack[stack.length - 1]);
+        //the problem is that the next time around the system cant go to the other path because the letters are in
+        //approved list!!!! remove the letters from the approved list and try AGAIN!!!!!!
+
+        if(foundFlag && lettersFound === 1){
+          console.log('letter found:' + word[k]);
+          k++;
+          console.log('K updated to:' + k);
+          console.log('visited letters: ' + approvedLetters);
+          console.log('stack : ' + stack);
+
+          if(k === wordLength)
+          return true;
+
+          value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
+
+        }
+         if(foundFlag && lettersFound> 1){
+          //this is where it branched off
+          console.log('letter found:' + word[k]);
+          unchecked_branch = k+1;
+          console.log('branched off here: ' + unchecked_branch);
+          console.log('visited letters: ' + approvedLetters);
+          console.log('stack : ' + stack);
+          k++;
+          if(k === wordLength)
+          return true;
+          value = stack.pop();i = value[0]; j = value[1]; foundFlag=false; lettersFound = 0;
+        }
+         if(!foundFlag && stack.length>0){
+          //go back to the node where it branches off
+          //what variables need to be tracked ??
+          k = unchecked_branch;
+          for(let l=0;l<=approvedLetters.length-(k-1);l++){
+            approvedLetters.pop();
+          }
+          //remove the multiple entries
+          value = stack.pop();i = value[0]; j = value[1]; lettersFound = 0;
+          console.log('nothing is found. reverting the value of k back to: ' + k);
+          console.log('looking for the next letter: ' + word[k]);
+        }
+
+
+
+
+        console.log('stack for next loop: ' + stack);
+        console.log('---------------------');
       }
   }
+
   isRepeated(visited,i,j){
     for(let k=0; k<visited.length;k++){
       if(visited[k][0]===i && visited[k][1]===j ){
@@ -100,6 +154,7 @@ class GameBoard extends Component {
     }
     return false;
   }
+
   isOutOfBounds(i, j, boardDim, direction){
     if(direction === 'tp' && i-1<0)
       return true;
@@ -122,7 +177,6 @@ class GameBoard extends Component {
 
   }
 
-
   handleSubmit(event){
     let word = event.target[0].value;
     if(this.validate(word) === true) {
@@ -139,6 +193,7 @@ class GameBoard extends Component {
     }
     event.preventDefault();
   }
+
   render(){
     const {word, approvedWords, error, board} = this.state;
     return(

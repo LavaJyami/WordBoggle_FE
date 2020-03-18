@@ -10,23 +10,23 @@ class Mainboard extends Component{
         <h1>Word Boggle !!</h1>
         <div className="squarecontainer">
           <div className="row">
-          {data[0].map(n => {
-            return <Square value={n}/>
+          {data[0].map((n,i)=> {
+            return <Square key={i} value={n}/>
           })}
           </div>
           <div className="row">
-          {data[1].map(n => {
-            return <Square value={n}/>
+          {data[1].map((n,i) => {
+            return <Square key={i} value={n}/>
           })}
           </div>
           <div className="row">
-          {data[2].map(n => {
-            return <Square value={n}/>
+          {data[2].map((n,i) => {
+            return <Square key={i} value={n}/>
           })}
           </div>
           <div className="row">
-          {data[3].map(n => {
-            return <Square value={n}/>
+          {data[3].map((n,i) => {
+            return <Square key={i} value={n}/>
           })}
           </div>
         </div>
