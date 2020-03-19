@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Mainboard from './Mainboard';
 import Wordlist from './Wordlist';
-import Timer from './Timer';
+import Score from './Score';
 
 class GameBoard extends Component {
   constructor(props){
@@ -12,14 +12,15 @@ class GameBoard extends Component {
       error: '',
       board: [[''," "," "," "],[" "," "," "," "],[" "," "," "," "],[" "," "," "," "]],
       time: {},
-      seconds: 10,
-      endgame: false
+      seconds: 9,
+      score: 0
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.timer = 0;
     this.startTimer = this.startTimer.bind(this);
     this.startGame = this.startGame.bind(this);
+    this.playAgain = this.playAgain.bind(this);
     this.countDown = this.countDown.bind(this);
   }
 
@@ -184,20 +185,40 @@ class GameBoard extends Component {
   componentDidMount() {
     let timeLeftVar = this.secondsToTime(this.state.seconds);
     this.setState({ time: timeLeftVar });
-
+    this.startGame();
   }
 
   startTimer() {
     if (this.timer == 0 && this.state.seconds > 0) {
       this.timer = setInterval(this.countDown, 1000);
     }
-    this.setState({endgame: false});
   }
+
   startGame() {
   var board = this.getNewGame();
-  this.setState({board});
+  this.setState({board: board});
   this.startTimer();
   }
+
+
+  endGame(){
+    this.setState({
+      board: [['','','',''],['','','',''],['','','',''],['','','','']],
+      approvedWords: [],
+      seconds: 12
+      });
+  }
+
+  playAgain(){
+    let timeLeftVar = this.secondsToTime(this.state.seconds);
+    this.setState({ time: timeLeftVar });
+      this.timer = setInterval(this.countDown, 1000);
+      var board = this.getNewGame();
+      this.setState({board: board});
+
+
+  }
+
   countDown() {
     // Remove one second, set state so a re-render happens.
     let seconds = this.state.seconds - 1;
@@ -208,8 +229,7 @@ class GameBoard extends Component {
 
     // Check if we're at zero.
     if (seconds == 0) {
-      this.setState({board: [['','','',''],['','','',''],['','','',''],['','','','']]});
-      this.setState({endgame: true});
+      this.endGame();
       clearInterval(this.timer);
     }
   }
@@ -242,7 +262,7 @@ class GameBoard extends Component {
                     <p className = "error">{error}</p>
                     <div>
                       <button
-                      onClick={this.startTimer}
+                      onClick={this.playAgain}
                       >Play Again
                       </button>
                       <button
@@ -250,16 +270,15 @@ class GameBoard extends Component {
                       >StartGame
                       </button>
                     </div>
-                </div>
+                  </div>
 
-                <div>
+                  <div>
                       <div id="timer">
-                        Time Remaining: {this.state.time.s}
+                        Time remaining: {this.state.time.m} : {this.state.time.s}
                       </div>
-                    <Wordlist value = {approvedWords}/>
-                    <button className = "gameSubmit"> Submit Game </button>
-
-                </div>
+                      <Wordlist value = {approvedWords}/>
+                      <Score words={approvedWords} />
+                  </div>
             </div>
       </div>
 
