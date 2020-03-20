@@ -180,8 +180,6 @@ class GameBoard extends Component {
     // return data;
   }
 
-
-  //Timer related functions
   secondsToTime(secs){
       let hours = Math.floor(secs / (60 * 60));
 
@@ -225,19 +223,19 @@ class GameBoard extends Component {
     this.startGame();
   }
 
-    startGame() {
-    var board = this.getNewGame();
-    this.setState({board: board});
+  startGame() {
+  var board = this.getNewGame();
+  this.setState({board: board});
 
-    let timeLeftVar = this.secondsToTime(this.state.seconds);
-    this.setState({ time: timeLeftVar });
+  let timeLeftVar = this.secondsToTime(this.state.seconds);
+  this.setState({ time: timeLeftVar });
 
-    this.startTimer();
-    }
+  this.startTimer();
+  }
 
-    getNewGame(){
-      return([['E',"T","N","A"],["D","Z","E","E"],["L","O","U","R"],["S","T","O","P"]]);
-    }
+  getNewGame(){
+    return([['E',"T","N","A"],["D","Z","E","E"],["L","O","U","R"],["S","T","O","P"]]);
+  }
 
   endGame(){
     let length = this.state.approvedWords.length;
@@ -263,12 +261,9 @@ class GameBoard extends Component {
     this.startGame();
   }
 
-
-
-
   render(){
 
-    const {word, approvedWords, error, board} = this.state;
+    const {word, approvedWords, error, board, time, seconds} = this.state;
     return(
 
       <div id="mainboard">
@@ -303,7 +298,7 @@ class GameBoard extends Component {
 
                   <div>
                       <div id="timer">
-                        Time remaining: {this.state.time.m} : {this.state.time.s}
+                        Time remaining: {time.m} : {time.s}
                       </div>
                       <Wordlist value = {approvedWords}/>
                       <Score words={approvedWords} />
