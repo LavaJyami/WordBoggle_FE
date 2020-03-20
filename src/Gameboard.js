@@ -2,21 +2,29 @@ import React, { Component } from 'react';
 import Mainboard from './Mainboard';
 import Wordlist from './Wordlist';
 import Score from './Score';
+import Async from 'react-async';
+
+
+
+
 
 class GameBoard extends Component {
   constructor(props){
     super(props);
+
     this.state = {
       word: '',
       approvedWords: [],
       error: '',
       board: [[''," "," "," "],[" "," "," "," "],[" "," "," "," "],[" "," "," "," "]],
       time: {},
-      seconds: 9,
-      score: 0
+      seconds: 90,
+      score: 0,
+      validityData: 0
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.validateWordAPI = this.validateWordAPI.bind(this);
     this.timer = 0;
     this.startTimer = this.startTimer.bind(this);
     this.startGame = this.startGame.bind(this);
@@ -145,9 +153,16 @@ class GameBoard extends Component {
 
   }
 
+  handleIncomingData(data){
+    if(data.length>0)
+    return true;
+    else
+    return false;
+  }
   handleSubmit(event){
     let word = event.target[0].value;
-    if(this.validate(word) === true) {
+
+    if(this.validate(word) === true ) {
         this.setState({error: ''});
         this.setState(previousState => ({
         approvedWords: [...previousState.approvedWords, word]}));
@@ -160,6 +175,35 @@ class GameBoard extends Component {
         event.target[0].value = this.state.word;
     }
     event.preventDefault();
+  }
+
+  async validateWordAPI(event){
+        event.preventDefault();
+    const word = event.target[0].value;
+    const key = 'dict.1.1.20200319T090129Z.8eb6b755e125a705.7fd9b9cb85a09a0dd9c47a86bb564c856893cafc';
+    const response = await fetch(`https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=${key}&lang=en-ru&text=${word}`);
+    const data = await response.json();
+    if(data.def.length>0){
+      if(this.validate(word) === true ) {
+          this.setState({error: ''});
+          this.setState(previousState => ({
+          approvedWords: [...previousState.approvedWords, word]}));
+          this.setState({word: ''});
+          // event.target[0].value = this.state.word;
+      }
+      else {
+          this.setState({error: 'invalid!!'});
+          this.setState({word: ''});
+          // event.target[0].value = this.state.word;
+      }
+    }
+    else {
+        this.setState({error: 'invalid!!'});
+        this.setState({word: ''});
+        // event.target[0].value = this.state.word;
+    }
+
+    // return data;
   }
 
   secondsToTime(secs){
@@ -205,18 +249,19 @@ class GameBoard extends Component {
     this.setState({
       board: [['','','',''],['','','',''],['','','',''],['','','','']],
       approvedWords: [],
-      seconds: 12
+      seconds: 90
       });
   }
 
   playAgain(){
     let timeLeftVar = this.secondsToTime(this.state.seconds);
     this.setState({ time: timeLeftVar });
+
+      if (this.timer == 0 && this.state.seconds > 0)
       this.timer = setInterval(this.countDown, 1000);
+
       var board = this.getNewGame();
       this.setState({board: board});
-
-
   }
 
   countDown() {
@@ -234,9 +279,16 @@ class GameBoard extends Component {
     }
   }
 
+  getWords(){
+    return(
+      this.state.validityData.length
+    );
+  }
+
 
 
   render(){
+
     const {word, approvedWords, error, board, endgame} = this.state;
     return(
 
@@ -244,7 +296,8 @@ class GameBoard extends Component {
             <div className = "boards">
                 <div>
                     <Mainboard value = {board}/>
-                    <form id="input_box" onSubmit={this.handleSubmit}>
+
+                    <form id="input_box" onSubmit={this.validateWordAPI}>
                         <input
                         type="text"
                         onChange={this.handleChange}
@@ -257,18 +310,15 @@ class GameBoard extends Component {
                         value="Add +"
                         />
 
-
                     </form>
+
                     <p className = "error">{error}</p>
                     <div>
                       <button
                       onClick={this.playAgain}
                       >Play Again
                       </button>
-                      <button
-                      onClick={this.startGame}
-                      >StartGame
-                      </button>
+
                     </div>
                   </div>
 
@@ -278,6 +328,7 @@ class GameBoard extends Component {
                       </div>
                       <Wordlist value = {approvedWords}/>
                       <Score words={approvedWords} />
+
                   </div>
             </div>
       </div>
