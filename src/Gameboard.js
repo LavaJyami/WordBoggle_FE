@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 import Mainboard from './Mainboard';
 import Wordlist from './Wordlist';
 import Score from './Score';
-import Async from 'react-async';
-
-
-
-
 
 class GameBoard extends Component {
   constructor(props){
@@ -18,12 +13,11 @@ class GameBoard extends Component {
       error: '',
       board: [[''," "," "," "],[" "," "," "," "],[" "," "," "," "],[" "," "," "," "]],
       time: {},
-      seconds: 90,
+      seconds: 9,
       score: 0,
       validityData: 0
     };
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.validateWordAPI = this.validateWordAPI.bind(this);
     this.timer = 0;
     this.startTimer = this.startTimer.bind(this);
@@ -159,23 +153,6 @@ class GameBoard extends Component {
     else
     return false;
   }
-  handleSubmit(event){
-    let word = event.target[0].value;
-
-    if(this.validate(word) === true ) {
-        this.setState({error: ''});
-        this.setState(previousState => ({
-        approvedWords: [...previousState.approvedWords, word]}));
-        this.setState({word: ''});
-        event.target[0].value = this.state.word;
-    }
-    else {
-        this.setState({error: 'invalid!!'});
-        this.setState({word: ''});
-        event.target[0].value = this.state.word;
-    }
-    event.preventDefault();
-  }
 
   async validateWordAPI(event){
         event.preventDefault();
@@ -206,6 +183,8 @@ class GameBoard extends Component {
     // return data;
   }
 
+
+  //Timer related functions
   secondsToTime(secs){
       let hours = Math.floor(secs / (60 * 60));
 
@@ -223,45 +202,10 @@ class GameBoard extends Component {
       return obj;
     }
 
-  getNewGame(){
-    return([['E',"T","N","A"],["D","Z","E","E"],["L","O","U","R"],["S","T","O","P"]]);
-  }
-  componentDidMount() {
-    let timeLeftVar = this.secondsToTime(this.state.seconds);
-    this.setState({ time: timeLeftVar });
-    this.startGame();
-  }
-
   startTimer() {
-    if (this.timer == 0 && this.state.seconds > 0) {
+    if (this.timer === 0 && this.state.seconds > 0) {
       this.timer = setInterval(this.countDown, 1000);
     }
-  }
-
-  startGame() {
-  var board = this.getNewGame();
-  this.setState({board: board});
-  this.startTimer();
-  }
-
-
-  endGame(){
-    this.setState({
-      board: [['','','',''],['','','',''],['','','',''],['','','','']],
-      approvedWords: [],
-      seconds: 90
-      });
-  }
-
-  playAgain(){
-    let timeLeftVar = this.secondsToTime(this.state.seconds);
-    this.setState({ time: timeLeftVar });
-
-      if (this.timer == 0 && this.state.seconds > 0)
-      this.timer = setInterval(this.countDown, 1000);
-
-      var board = this.getNewGame();
-      this.setState({board: board});
   }
 
   countDown() {
@@ -273,23 +217,49 @@ class GameBoard extends Component {
     });
 
     // Check if we're at zero.
-    if (seconds == 0) {
+    if (seconds === 0) {
       this.endGame();
       clearInterval(this.timer);
+      this.timer = 0;
     }
   }
 
-  getWords(){
-    return(
-      this.state.validityData.length
-    );
+  componentDidMount() {
+    this.startGame();
   }
+
+    startGame() {
+    var board = this.getNewGame();
+    this.setState({board: board});
+
+    let timeLeftVar = this.secondsToTime(this.state.seconds);
+    this.setState({ time: timeLeftVar });
+
+    this.startTimer();
+    }
+
+    getNewGame(){
+      return([['E',"T","N","A"],["D","Z","E","E"],["L","O","U","R"],["S","T","O","P"]]);
+    }
+
+  endGame(){
+    this.setState({
+      board: [['','','',''],['','','',''],['','','',''],['','','','']],
+      approvedWords: [],
+      seconds: 9
+      });
+  }
+
+  playAgain(){
+    this.startGame();
+  }
+
 
 
 
   render(){
 
-    const {word, approvedWords, error, board, endgame} = this.state;
+    const {word, approvedWords, error, board} = this.state;
     return(
 
       <div id="mainboard">
