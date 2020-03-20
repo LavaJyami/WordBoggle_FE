@@ -8,12 +8,12 @@ class GameBoard extends Component {
     super(props);
 
     this.state = {
-      word: '',
+      word: ' ',
       approvedWords: [],
       error: '',
       board: [[''," "," "," "],[" "," "," "," "],[" "," "," "," "],[" "," "," "," "]],
       time: {},
-      seconds: 9,
+      seconds: 60,
       score: 0,
       validityData: 0
     };
@@ -27,7 +27,11 @@ class GameBoard extends Component {
   }
 
   handleChange(event){
-    this.setState({word: event.target.word});
+    this.setState({
+      word: event.target.value,
+      error: ''
+    });
+
   }
 
   validate(word){
@@ -147,13 +151,6 @@ class GameBoard extends Component {
 
   }
 
-  handleIncomingData(data){
-    if(data.length>0)
-    return true;
-    else
-    return false;
-  }
-
   async validateWordAPI(event){
         event.preventDefault();
     const word = event.target[0].value;
@@ -243,11 +240,23 @@ class GameBoard extends Component {
     }
 
   endGame(){
+    let length = this.state.approvedWords.length;
+    let totalScore = 0;
+    if(length > 0){
+      for(let i=0;i<length;i++){
+        totalScore = totalScore + this.state.approvedWords[i].length;
+      }
+      alert('Your Score is: ' + totalScore) ;
+    }
+    else
+    alert('Your Score is: ' + 0) ;
     this.setState({
       board: [['','','',''],['','','',''],['','','',''],['','','','']],
       approvedWords: [],
-      seconds: 9
+      seconds: 60,
+      error: ''
       });
+
   }
 
   playAgain(){
